@@ -25,6 +25,4 @@ async def create_temperature_record(db: AsyncSession, city_id: int, temp_value: 
         date_time=datetime.now()
     )
     db.add(new_record)
-    await db.commit()
-    await db.refresh(new_record)
-    return new_record
+

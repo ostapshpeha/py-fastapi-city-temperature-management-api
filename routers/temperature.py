@@ -24,20 +24,23 @@ async def read_temperatures(
     return await temp_crud.get_all_temperature_records(db)
 
 
-@router.post("/update/")
+@router.post("/update")
 async def update_all_cities_weather(db: AsyncSession = Depends(get_db)):
     cities = await city_crud.get_all_cities(db)
 
-    updated_records = []
+    updated_count = 0
     for city in cities:
         try:
             current_temp = await fetch_weather(city.name)
 
-            record = await temp_crud.create_temperature_record(
+            await temp_crud.create_temperature_record(
                 db, city_id=city.id, temp_value=current_temp
             )
-            updated_records.append({"city": city.name, "temp": current_temp})
+            updated_count += 1
         except Exception as e:
-            print(f"Error updating {city.name}: {e}")
+            print(f"Failed to fetch weather for {city.name}: {e}")
 
-    return {"status": "success", "updated": updated_records}
+    if updated_count > 0:
+        await db.commit()
+
+    return {"status": "success", "records_updated": updated_count}
