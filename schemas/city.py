@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from schemas.temperature import Temperature
 
 
@@ -14,8 +14,7 @@ class CityCreate(CityBase):
 class City(CityBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CityFull(City):
     temperatures: List[Temperature] = []
